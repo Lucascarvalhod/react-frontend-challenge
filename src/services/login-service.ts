@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 const SESSION_KEY = 'libris-session';
 
-const credentialsSchema = z.object({
+export const credentialsSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(7, 'Senha deve ter mais de 6 caracteres'),
 });

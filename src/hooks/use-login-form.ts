@@ -1,15 +1,22 @@
-import { useState, type FormEvent } from 'react';
+import { useForm } from '@tanstack/react-form';
 import { useAuth } from '@/hooks/use-auth';
+import { credentialsSchema, type LoginCredentials } from '@/services/login-service';
 
 export function useLoginForm() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
   const { error, signIn } = useAuth();
 
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    signIn({ email, password });
-  }
+  const form = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+    } as LoginCredentials,
+    validators: {
+      onChange: credentialsSchema,
+    },
+    onSubmit: async ({ value }) => {
+      signIn(value);
+    },
+  });
 
-  return { email, password, error, setEmail, setPassword, submit };
+  return { form, error };
 }

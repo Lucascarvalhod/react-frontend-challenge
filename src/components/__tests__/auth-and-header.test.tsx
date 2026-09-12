@@ -1,27 +1,12 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Header } from '@/components/header';
 import { LoginForm } from '@/components/auth/login-form';
+import * as authHook from '@/hooks/use-auth';
 
-const loginFormState = {
-  email: '',
-  password: '',
-  error: '',
-  setEmail: vi.fn(),
-  setPassword: vi.fn(),
-  submit: vi.fn((event: React.FormEvent) => event.preventDefault()),
-};
-const signOut = vi.fn();
-
-vi.mock('@/hooks/use-login-form', () => ({
-  useLoginForm: () => loginFormState,
-}));
-
-vi.mock('@/hooks/use-auth', () => ({
-  useAuth: () => ({ signOut }),
-  demoUser: { initials: 'LC', name: 'Lucas Carvalho', email: 'lucas@email.com' },
-}));
+const signInMock = vi.fn();
+const signOutMock = vi.fn();
 
 function renderWithRouter(ui: React.ReactNode) {
   return render(<MemoryRouter>{ui}</MemoryRouter>);
@@ -30,25 +15,60 @@ function renderWithRouter(ui: React.ReactNode) {
 describe('autenticação e cabeçalho', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    loginFormState.email = '';
-    loginFormState.password = '';
-    loginFormState.error = '';
+    vi.spyOn(authHook, 'useAuth').mockReturnValue({
+      signIn: signInMock,
+      signOut: signOutMock,
+      error: '',
+    });
   });
 
-  it('propaga mudanças dos campos e submete o formulário de login', () => {
+  it('exibe mensagens de validação ao preencher dados inválidos', async () => {
     renderWithRouter(<LoginForm />);
 
-    fireEvent.change(screen.getByLabelText('Email'), { target: { value: 'leitor@teste.com' } });
-    fireEvent.change(screen.getByLabelText('Senha'), { target: { value: 'segredo' } });
-    fireEvent.submit(screen.getByRole('button', { name: /Entrar/ }).closest('form')!);
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Senha');
 
-    expect(loginFormState.setEmail).toHaveBeenCalledWith('leitor@teste.com');
-    expect(loginFormState.setPassword).toHaveBeenCalledWith('segredo');
-    expect(loginFormState.submit).toHaveBeenCalled();
+    fireEvent.change(emailInput, { target: { value: 'email-invalido' } });
+    fireEvent.blur(emailInput);
+
+    fireEvent.change(passwordInput, { target: { value: '123' } });
+    fireEvent.blur(passwordInput);
+
+    await waitFor(() => {
+      expect(screen.getByText('Email inválido')).toBeInTheDocument();
+      expect(screen.getByText('Senha deve ter mais de 6 caracteres')).toBeInTheDocument();
+    });
+
+    expect(signInMock).not.toHaveBeenCalled();
   });
 
-  it('exibe o erro devolvido pelo hook de login', () => {
-    loginFormState.error = 'Credenciais inválidas';
+  it('submete o formulário com dados válidos e aciona signIn', async () => {
+    renderWithRouter(<LoginForm />);
+
+    const emailInput = screen.getByLabelText('Email');
+    const passwordInput = screen.getByLabelText('Senha');
+    const submitButton = screen.getByRole('button', { name: /Entrar/i });
+
+    fireEvent.change(emailInput, { target: { value: 'leitor@teste.com' } });
+    fireEvent.change(passwordInput, { target: { value: 'segredo123' } });
+
+    fireEvent.click(submitButton);
+
+    await waitFor(() => {
+      expect(signInMock).toHaveBeenCalledWith({
+        email: 'leitor@teste.com',
+        password: 'segredo123',
+      });
+    });
+  });
+
+  it('exibe erro retornado pela autenticação global', () => {
+    vi.spyOn(authHook, 'useAuth').mockReturnValue({
+      signIn: signInMock,
+      signOut: signOutMock,
+      error: 'Credenciais inválidas',
+    });
+
     renderWithRouter(<LoginForm />);
 
     expect(screen.getByText('Credenciais inválidas')).toBeInTheDocument();
@@ -62,6 +82,6 @@ describe('autenticação e cabeçalho', () => {
     expect(screen.getByText('Lucas Carvalho')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /LC/ }));
-    expect(signOut).toHaveBeenCalledOnce();
+    expect(signOutMock).toHaveBeenCalledOnce();
   });
 });
