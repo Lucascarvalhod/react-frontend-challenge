@@ -2,6 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BookCard } from '@/components/books/book-card';
+import { BookCover } from '@/components/books/book-cover';
 import { BookDetailContent } from '@/components/books/book-detail-content';
 import { BookSearchResults } from '@/components/books/book-search-results';
 import { ShelfTable } from '@/components/books/shelf-table';
@@ -60,6 +61,13 @@ describe('componentes de livros', () => {
     expect(screen.getByText('Na estante')).toBeInTheDocument();
   });
 
+  it('exibe um placeholder no BookCard quando o livro não possui capa', () => {
+    const { container } = renderWithRouter(<BookCard book={{ ...book, thumbnail: null }} />);
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Capa de Duna' })).toHaveClass('book-cover-placeholder');
+  });
+
   it('sanitiza a descrição e controla o estado de salvamento do detalhe', () => {
     const onToggleSaved = vi.fn();
     renderWithRouter(<BookDetailContent book={book} saved={false} onToggleSaved={onToggleSaved} />);
@@ -73,6 +81,14 @@ describe('componentes de livros', () => {
 
     renderWithRouter(<BookDetailContent book={book} saved onToggleSaved={onToggleSaved} />);
     expect(screen.getByRole('button', { name: 'Remover da estante' })).toBeInTheDocument();
+  });
+
+  it('exibe um placeholder no detalhe quando o livro não possui capa', () => {
+    const { container } = renderWithRouter(
+      <BookDetailContent book={{ ...book, thumbnail: null }} saved={false} onToggleSaved={vi.fn()} />,
+    );
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
   });
 
   it('renderiza loading, erro, resultados e regras de paginação', () => {
@@ -143,5 +159,37 @@ describe('componentes de livros', () => {
     expect(onStatusChange).toHaveBeenCalledWith('duna', 'Lendo');
     expect(onRemove).toHaveBeenCalledWith('duna');
     expect(screen.getByRole('columnheader', { name: 'Livro' })).toBeInTheDocument();
+  });
+
+  it('exibe um placeholder na estante quando o livro não possui capa', () => {
+    const { container } = render(
+      <ShelfTable books={[{ ...book, thumbnail: null }]} onStatusChange={vi.fn()} onRemove={vi.fn()} />,
+    );
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+  });
+});
+
+describe('BookCover', () => {
+  it('renderiza a imagem quando há uma capa válida', () => {
+    render(<BookCover src="/duna.jpg" alt="Capa de Duna" />);
+
+    expect(screen.getByRole('img', { name: 'Capa de Duna' })).toHaveAttribute('src', '/duna.jpg');
+  });
+
+  it('renderiza o placeholder quando a capa é nula', () => {
+    const { container } = render(<BookCover src={null} alt="Capa de Duna" />);
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Capa de Duna' })).toHaveClass('book-cover-placeholder');
+  });
+
+  it('troca para o placeholder quando a imagem falha ao carregar', () => {
+    const { container } = render(<BookCover src="/quebrada.jpg" alt="Capa de Duna" />);
+
+    fireEvent.error(screen.getByRole('img', { name: 'Capa de Duna' }));
+
+    expect(container.querySelector('img')).not.toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Capa de Duna' })).toHaveClass('book-cover-placeholder');
   });
 });

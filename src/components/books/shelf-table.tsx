@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import type { Book, ReadingStatus } from '@/types/book';
+import { BookCover } from '@/components/books/book-cover';
 
 type Props = {
   books: Book[];
@@ -34,7 +35,7 @@ function ShelfRow({ book, onStatusChange, onRemove }: { book: Book; onStatusChan
   return (
     <tr>
       <td className="book-cell">
-        <img src={book.thumbnail} alt="" />
+        <BookCover src={book.thumbnail} alt={`Capa de ${book.title}`} />
         <strong>{book.title}</strong>
       </td>
       <td>{book.authors.join(', ')}</td>

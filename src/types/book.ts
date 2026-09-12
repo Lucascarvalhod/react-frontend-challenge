@@ -6,7 +6,7 @@ export type Book = {
   publishedDate: string;
   description: string;
   publisher: string;
-  thumbnail: string;
+  thumbnail: string | null;
   previewLink?: string;
   status?: ReadingStatus;
 };

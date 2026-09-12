@@ -8,7 +8,7 @@ const FALLBACK_BOOKS: Book[] = [
     publishedDate: '1965',
     description: 'Em um futuro distante, o jovem Paul Atreides luta pelo controle do planeta deserto Arrakis.',
     publisher: 'Editora Aleph',
-    thumbnail: '',
+    thumbnail: null,
     previewLink: undefined,
   },
   {
@@ -18,7 +18,7 @@ const FALLBACK_BOOKS: Book[] = [
     publishedDate: '1949',
     description: 'Um retrato sombrio de um estado totalitário que vigia e controla todos os aspectos da vida.',
     publisher: 'Companhia das Letras',
-    thumbnail: '',
+    thumbnail: null,
     previewLink: undefined,
   },
   {
@@ -28,7 +28,7 @@ const FALLBACK_BOOKS: Book[] = [
     publishedDate: '1937',
     description: 'Bilbo Bolseiro é convocado para uma aventura inesperada rumo à Montanha Solitária.',
     publisher: 'HarperCollins',
-    thumbnail: '',
+    thumbnail: null,
     previewLink: undefined,
   },
 ];

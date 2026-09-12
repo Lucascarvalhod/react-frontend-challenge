@@ -1,6 +1,7 @@
 import DOMPurify from 'dompurify';
 import { Link } from 'react-router-dom';
 import type { Book } from '@/types/book';
+import { BookCover } from '@/components/books/book-cover';
 
 type Props = {
   book: Book;
@@ -16,7 +17,7 @@ export function BookDetailContent({ book, saved, onToggleSaved }: Props) {
       </Link>
       <div className="detail-grid">
         <div className="detail-cover">
-          <img src={book.thumbnail} alt={`Capa de ${book.title}`} />
+          <BookCover src={book.thumbnail} alt={`Capa de ${book.title}`} />
         </div>
         <div>
           <p className="eyebrow">DETALHES DO LIVRO</p>

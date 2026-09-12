@@ -12,7 +12,7 @@ function mapVolumeToBook({ id, volumeInfo }: GoogleVolume): Book {
     publishedDate: volumeInfo.publishedDate ?? '—',
     description: volumeInfo.description ?? 'Sinopse indisponível.',
     publisher: volumeInfo.publisher ?? '—',
-    thumbnail: volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:') ?? '',
+    thumbnail: volumeInfo.imageLinks?.thumbnail?.replace('http:', 'https:') ?? null,
     previewLink: volumeInfo.previewLink,
   };
 }

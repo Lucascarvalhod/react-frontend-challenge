@@ -2,6 +2,7 @@ import { Bookmark, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Book } from '@/types/book';
 import { useLibraryStore } from '@/store/library-store';
+import { BookCover } from '@/components/books/book-cover';
 
 export function BookCard({ book }: { book: Book }) {
   const navigate = useNavigate();
@@ -9,7 +10,7 @@ export function BookCard({ book }: { book: Book }) {
   return (
     <article className="book-card" onClick={() => navigate(`/book/${book.id}`)}>
       <div className="cover">
-        <img src={book.thumbnail} alt={`Capa de ${book.title}`} />
+        <BookCover src={book.thumbnail} alt={`Capa de ${book.title}`} />
         <button
           onClick={(event) => {
             event.stopPropagation();
