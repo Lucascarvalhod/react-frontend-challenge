@@ -1,12 +1,12 @@
 import { Bookmark, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { Book } from '@/types/book';
-import { useLibraryStore } from '@/store/library-store';
+import { useAppStore } from '@/store/app-store';
 import { BookCover } from '@/components/books/book-cover';
 
 export function BookCard({ book }: { book: Book }) {
   const navigate = useNavigate();
-  const saved = useLibraryStore((state) => state.books.some((item) => item.id === book.id));
+  const saved = useAppStore((state) => state.books.some((item) => item.id === book.id));
   return (
     <article className="book-card" onClick={() => navigate(`/book/${book.id}`)}>
       <div className="cover">

@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Header } from '@/components/header';
 import { LoginForm } from '@/components/auth/login-form';
 import * as authHook from '@/hooks/use-auth';
+import { useAppStore } from '@/store/app-store';
 
 const signInMock = vi.fn();
 const signOutMock = vi.fn();
@@ -15,6 +16,7 @@ function renderWithRouter(ui: React.ReactNode) {
 describe('autenticação e cabeçalho', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    useAppStore.setState({ theme: 'light' });
     vi.spyOn(authHook, 'useAuth').mockReturnValue({
       signIn: signInMock,
       signOut: signOutMock,
@@ -83,5 +85,17 @@ describe('autenticação e cabeçalho', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /LC/ }));
     expect(signOutMock).toHaveBeenCalledOnce();
+  });
+
+  it('alterna o tema pelo cabeçalho e disponibiliza o controle no login', () => {
+    const { unmount } = renderWithRouter(<Header />);
+
+    const themeToggle = screen.getByRole('button', { name: 'Ativar tema escuro' });
+    fireEvent.click(themeToggle);
+    expect(screen.getByRole('button', { name: 'Ativar tema claro' })).toBeInTheDocument();
+
+    unmount();
+    renderWithRouter(<LoginForm />);
+    expect(screen.getByRole('button', { name: 'Ativar tema claro' })).toBeInTheDocument();
   });
 });

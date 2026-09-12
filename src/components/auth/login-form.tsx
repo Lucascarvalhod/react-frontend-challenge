@@ -1,5 +1,6 @@
 import { ChevronRight } from 'lucide-react';
 import { Brand } from '@/components/ui/brand';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 import { useLoginForm } from '@/hooks/use-login-form';
 
 function getErrorMessage(error: unknown): string {
@@ -16,7 +17,10 @@ export function LoginForm() {
   return (
     <main className="auth-page">
       <div className="auth-card">
-        <Brand large />
+        <div className="auth-card-header">
+          <Brand large />
+          <ThemeToggle />
+        </div>
         <p className="eyebrow">BEM-VINDO DE VOLTA</p>
         <h1>
           Sua próxima leitura

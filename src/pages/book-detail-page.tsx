@@ -3,12 +3,12 @@ import { Header } from '@/components/header';
 import { BookDetailContent } from '@/components/books/book-detail-content';
 import { ErrorState, FallbackNotice, LoadingState } from '@/components/ui/states';
 import { useBookDetail } from '@/hooks/use-book-detail';
-import { useLibraryStore } from '@/store/library-store';
+import { useAppStore } from '@/store/app-store';
 
 export function BookDetailPage() {
   const { bookId } = useParams();
   const { data, isLoading, isError, error } = useBookDetail(bookId);
-  const { books, addBook, removeBook } = useLibraryStore();
+  const { books, addBook, removeBook } = useAppStore();
   if (isLoading) return <LoadingState message="Carregando detalhes..." />;
   if (isError) return <ErrorState message={error instanceof Error ? error.message : undefined} />;
   if (!data) return null;

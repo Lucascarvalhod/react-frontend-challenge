@@ -5,11 +5,14 @@ import { BookDetailPage } from '@/pages/book-detail-page';
 import { DiscoverPage } from '@/pages/discover-page';
 import { ShelfPage } from '@/pages/shelf-page';
 import { hasSession } from '@/services/login-service';
+import { useTheme } from '@/hooks/use-theme';
 
 function Protected({ children }: { children: ReactNode }) {
   return hasSession() ? children : <Navigate to="/login" replace />;
 }
 export function App() {
+  useTheme();
+
   return (
     <Routes>
       <Route path="/login" element={<LoginForm />} />

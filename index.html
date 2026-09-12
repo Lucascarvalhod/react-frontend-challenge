@@ -1,10 +1,21 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>react-frontend-challenge</title>
+    <script>
+      try {
+        const stored = localStorage.getItem('libris-library');
+        const theme = stored ? JSON.parse(stored)?.state?.theme : null;
+        if (theme === 'dark' || theme === 'light') {
+          document.documentElement.dataset.theme = theme;
+          document.documentElement.style.colorScheme = theme;
+        }
+      } catch {
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

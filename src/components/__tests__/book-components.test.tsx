@@ -16,8 +16,8 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => navigate };
 });
 
-vi.mock('@/store/library-store', () => ({
-  useLibraryStore: (selector: (state: typeof libraryState) => unknown) => selector(libraryState),
+vi.mock('@/store/app-store', () => ({
+  useAppStore: (selector: (state: typeof libraryState) => unknown) => selector(libraryState),
 }));
 
 const book: Book = {
