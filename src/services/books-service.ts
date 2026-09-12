@@ -1,4 +1,5 @@
-import type { Book, BookSearchResponse, GoogleVolume } from '@/types/book';
+import type { Book, BookResult, BookSearchResponse, BookSearchResult, GoogleVolume } from '@/types/book';
+import { getFallbackBook, getFallbackBooks } from '@/services/books-fallback';
 
 const FALLBACK_AUTHORS = ['Autor desconhecido'];
 const DEFAULT_SEARCH_QUERY = 'subject:fiction';
@@ -18,10 +19,11 @@ function mapVolumeToBook({ id, volumeInfo }: GoogleVolume): Book {
 
 const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
 
-if (!API_KEY) {
-  throw new Error('VITE_GOOGLE_BOOKS_API_KEY ausente');
-}
+export const hasApiKey = () => Boolean(API_KEY);
 
+function withKey(url: string) {
+  return API_KEY ? `${url}&key=${API_KEY}` : url;
+}
 
 export async function searchBooks(
   query: string,
@@ -29,39 +31,56 @@ export async function searchBooks(
   orderBy = 'relevance',
   startIndex = 0,
   signal?: AbortSignal,
-): Promise<{ books: Book[]; totalItems: number }> {
+): Promise<BookSearchResult> {
   const searchQuery = query.trim() || DEFAULT_SEARCH_QUERY;
 
-  const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&printType=${printType}&orderBy=${orderBy}&startIndex=${startIndex}&maxResults=10&key=${API_KEY}`,
-    { signal },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Google Books API: ${response.status}`);
+  if (!hasApiKey()) {
+    return { books: getFallbackBooks(), totalItems: getFallbackBooks().length, isFallback: true };
   }
 
-  const data = (await response.json()) as BookSearchResponse;
+  try {
+    const response = await fetch(
+      withKey(
+        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&printType=${printType}&orderBy=${orderBy}&startIndex=${startIndex}&maxResults=10`,
+      ),
+      { signal },
+    );
 
-  const books = (data.items ?? []).map(mapVolumeToBook);
+    if (!response.ok) {
+      throw new Error(`Google Books API: ${response.status}`);
+    }
 
-  return {
-    totalItems: data.totalItems ?? 0,
-    books,
-  };
+    const data = (await response.json()) as BookSearchResponse;
+    const books = (data.items ?? []).map(mapVolumeToBook);
+
+    return { totalItems: data.totalItems ?? 0, books, isFallback: false };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') throw error;
+    return { books: getFallbackBooks(), totalItems: getFallbackBooks().length, isFallback: true };
+  }
 }
 
-export async function getBook(id: string, signal?: AbortSignal): Promise<Book> {
-  const response = await fetch(
-    `https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(id)}?key=${API_KEY}`,
-    { signal },
-  );
-
-  if (!response.ok) {
-    throw new Error(`Google Books API: ${response.status}`);
+export async function getBook(id: string, signal?: AbortSignal): Promise<BookResult> {
+  if (!hasApiKey()) {
+    return { book: getFallbackBook(id), isFallback: true };
   }
 
-  const volume = (await response.json()) as GoogleVolume;
+  try {
+    const response = await fetch(
+      withKey(`https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(id)}?`),
+      { signal },
+    );
 
-  return mapVolumeToBook(volume);
+    if (!response.ok) {
+      throw new Error(`Google Books API: ${response.status}`);
+    }
+
+    const volume = (await response.json()) as GoogleVolume;
+
+    return { book: mapVolumeToBook(volume), isFallback: false };
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') throw error;
+    return { book: getFallbackBook(id), isFallback: true };
+  }
 }
+

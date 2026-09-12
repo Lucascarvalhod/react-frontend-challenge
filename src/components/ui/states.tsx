@@ -12,6 +12,13 @@ export function ErrorState({ message = 'Não foi possível completar a requisiç
     </div>
   );
 }
+export function FallbackNotice() {
+  return (
+    <div className="fallback-notice" role="status">
+      Exibindo dados de exemplo — API sem chave configurada ou indisponível no momento.
+    </div>
+  );
+}
 export function EmptyState() {
   return (
     <div className="empty">

@@ -28,6 +28,7 @@ export function DiscoverPage() {
           isFetching={search.isFetching}
           isError={search.isError}
           error={search.error}
+          isFallback={search.data?.isFallback}
           onPreviousPage={search.previousPage}
           onNextPage={search.nextPage}
         />
