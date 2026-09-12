@@ -1,6 +1,7 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useState, type FormEvent } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { searchBooks } from '@/services/books-service';
+import { useDebounce } from '@/hooks/use-debounce';
 
 export function useBookSearch() {
   const [query, setQuery] = useState('');
@@ -8,6 +9,14 @@ export function useBookSearch() {
   const [printType, setPrintType] = useState('all');
   const [orderBy, setOrderBy] = useState('relevance');
   const [page, setPage] = useState(0);
+
+  const debouncedInput = useDebounce(input, 400);
+
+  useEffect(() => {
+    setPage(0);
+    setQuery(debouncedInput);
+  }, [debouncedInput]);
+
   const search = useQuery({
     queryKey: ['books', query, printType, orderBy, page],
     queryFn: ({ signal }) => searchBooks(query, printType, orderBy, page * 10, signal),

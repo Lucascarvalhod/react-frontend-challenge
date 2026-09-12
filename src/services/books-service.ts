@@ -55,7 +55,7 @@ export async function searchBooks(
 
     return { totalItems: data.totalItems ?? 0, books, isFallback: false };
   } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') throw error;
+    if (error instanceof Error && error.name === 'AbortError') throw error;
     return { books: getFallbackBooks(), totalItems: getFallbackBooks().length, isFallback: true };
   }
 }
@@ -79,7 +79,7 @@ export async function getBook(id: string, signal?: AbortSignal): Promise<BookRes
 
     return { book: mapVolumeToBook(volume), isFallback: false };
   } catch (error) {
-    if (error instanceof DOMException && error.name === 'AbortError') throw error;
+    if (error instanceof Error && error.name === 'AbortError') throw error;
     return { book: getFallbackBook(id), isFallback: true };
   }
 }
