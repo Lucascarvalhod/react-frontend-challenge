@@ -31,12 +31,13 @@ describe('componentes de UI', () => {
     expect(screen.getByRole('link', { name: 'Minha estante' })).toHaveAttribute('href', '/shelf');
   });
 
-  it('renderiza a marca com e sem o modo grande', () => {
+  it('renderiza a marca no modo grande', () => {
     renderWithRouter(<Brand large />);
 
     const brand = screen.getByRole('link', { name: 'Libris' });
     expect(brand).toHaveAttribute('href', '/');
-    expect(brand).toHaveClass('brand', 'large');
+    expect(brand).toHaveClass('text-[28]');
+    expect(brand.querySelector('svg')).toHaveClass('size-5.75');
   });
 
   it('renderiza mensagens padrão e customizadas dos estados', () => {

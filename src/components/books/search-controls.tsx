@@ -1,5 +1,8 @@
 import { Search, SlidersHorizontal } from 'lucide-react';
 import type { FormEvent } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { NativeSelect } from '@/components/ui/native-select';
 
 type Props = {
   input: string;
@@ -21,30 +24,31 @@ export function SearchControls({
 }: Props) {
   return (
     <>
-      <form className="search-bar" onSubmit={onSubmit}>
-        <Search size={20} />
-        <input
+      <form className="flex items-center gap-[3.25px] rounded-[13px] border border-border bg-card py-[1.75px] pr-2 pl-5 shadow-soft" onSubmit={onSubmit}>
+        <Search size={20} className="shrink-0 text-(--color-text-subtle)" />
+        <Input
+          className="h-auto border-0 bg-transparent px-0 py-0 shadow-none focus-visible:ring-0"
           value={input}
           onChange={(event) => onInputChange(event.target.value)}
           placeholder="Busque por título, autor ou ISBN..."
         />
-        <button className="primary">Buscar</button>
+        <Button type="submit">Buscar</Button>
       </form>
-      <div className="filter-row">
-        <label>
+      <div className="flex flex-wrap items-center gap-[6px] border-b border-(--color-border-subtle) py-[6px] pb-[4px] text-[12px] text-(--color-text-subtle) max-[760px]:gap-[3px]">
+        <label className="flex items-center gap-1.25">
           <SlidersHorizontal size={15} /> Tipo{' '}
-          <select value={printType} onChange={(event) => onPrintTypeChange(event.target.value)}>
+          <NativeSelect value={printType} onChange={(event) => onPrintTypeChange(event.target.value)}>
             <option value="all">Todos</option>
             <option value="books">Livros</option>
             <option value="magazines">Revistas</option>
-          </select>
+          </NativeSelect>
         </label>
-        <label>
+        <label className="flex items-center gap-1.25">
           Ordenar{' '}
-          <select value={orderBy} onChange={(event) => onOrderChange(event.target.value)}>
+          <NativeSelect value={orderBy} onChange={(event) => onOrderChange(event.target.value)}>
             <option value="relevance">Relevância</option>
             <option value="newest">Mais recentes</option>
-          </select>
+          </NativeSelect>
         </label>
       </div>
     </>

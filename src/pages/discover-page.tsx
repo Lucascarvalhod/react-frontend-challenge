@@ -10,7 +10,7 @@ export function DiscoverPage() {
   return (
     <>
       <Header />
-      <main className="shell">
+      <main className="mx-auto max-w-275 px-8 pt-[15px] pb-[20px] max-[760px]:px-5 max-[760px]:pt-[8.75px]">
         <DiscoverHero />
         <SearchControls
           input={search.input}
