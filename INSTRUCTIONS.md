@@ -16,6 +16,13 @@ npm run dev
 
 Abra a URL informada pelo Vite no navegador.
 
+### Credenciais de demonstração
+
+Use as seguintes credenciais para acessar a aplicação:
+
+- E-mail: `lucas@email.com`
+- Senha: `1234567`
+
 ### Google Books API
 
 A aplicação funciona sem `VITE_GOOGLE_BOOKS_API_KEY`: as pesquisas e os detalhes continuam sendo consultados diretamente na Google Books API. Nesse modo, a API aplica limites de uso menores.
