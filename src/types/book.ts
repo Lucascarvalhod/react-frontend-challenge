@@ -33,10 +33,8 @@ export type BookSearchResponse = {
 export type BookSearchResult = {
   books: Book[];
   totalItems: number;
-  isFallback: boolean;
 };
 
 export type BookResult = {
   book: Book;
-  isFallback: boolean;
 };

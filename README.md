@@ -5,8 +5,8 @@ This template provides a minimal setup to get React working in Vite with HMR and
 ## Variáveis de ambiente
 
 A `VITE_GOOGLE_BOOKS_API_KEY` é **opcional** — a Google Books API funciona sem chave para uso simples.
-Se a variável não estiver definida (ou a chamada à API falhar), a aplicação continua funcionando e exibe
-dados de exemplo (fallback) com um aviso na tela. Veja [.env.example](.env.example).
+Se a variável não estiver definida, a aplicação continua fazendo requisições reais à API, com limites de uso menores.
+Ao atingir o limite ou quando a API estiver indisponível, a tela exibe uma mensagem de erro. Veja [.env.example](.env.example).
 
 Currently, two official plugins are available:
 

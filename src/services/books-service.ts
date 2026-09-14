@@ -1,8 +1,8 @@
 import type { Book, BookResult, BookSearchResponse, BookSearchResult, GoogleVolume } from '@/types/book';
-import { getFallbackBook, getFallbackBooks } from '@/services/books-fallback';
 
 const FALLBACK_AUTHORS = ['Autor desconhecido'];
 const DEFAULT_SEARCH_QUERY = 'subject:fiction';
+const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 
 function mapVolumeToBook({ id, volumeInfo }: GoogleVolume): Book {
   return {
@@ -19,10 +19,22 @@ function mapVolumeToBook({ id, volumeInfo }: GoogleVolume): Book {
 
 const API_KEY = import.meta.env.VITE_GOOGLE_BOOKS_API_KEY;
 
-export const hasApiKey = () => Boolean(API_KEY);
+function createApiUrl(path = '') {
+  const url = new URL(`${GOOGLE_BOOKS_API_URL}${path}`);
 
-function withKey(url: string) {
-  return API_KEY ? `${url}&key=${API_KEY}` : url;
+  if (API_KEY) {
+    url.searchParams.set('key', API_KEY);
+  }
+
+  return url;
+}
+
+function getApiError(status: number) {
+  if (status === 404) return new Error('Livro não encontrado.');
+  if (status === 429) return new Error('Limite de requisições da Google Books API atingido. Tente novamente em instantes.');
+  if (status >= 500) return new Error('A Google Books API está indisponível. Tente novamente em instantes.');
+
+  return new Error('Não foi possível buscar os livros solicitados.');
 }
 
 export async function searchBooks(
@@ -34,53 +46,47 @@ export async function searchBooks(
 ): Promise<BookSearchResult> {
   const searchQuery = query.trim() || DEFAULT_SEARCH_QUERY;
 
-  if (!hasApiKey()) {
-    return { books: getFallbackBooks(), totalItems: getFallbackBooks().length, isFallback: true };
-  }
-
   try {
-    const response = await fetch(
-      withKey(
-        `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQuery)}&printType=${printType}&orderBy=${orderBy}&startIndex=${startIndex}&maxResults=10`,
-      ),
-      { signal },
-    );
+    const url = createApiUrl();
+    url.searchParams.set('q', searchQuery);
+    url.searchParams.set('printType', printType);
+    url.searchParams.set('orderBy', orderBy);
+    url.searchParams.set('startIndex', String(startIndex));
+    url.searchParams.set('maxResults', '10');
+    const response = await fetch(url, { signal });
 
     if (!response.ok) {
-      throw new Error(`Google Books API: ${response.status}`);
+      throw getApiError(response.status);
     }
 
     const data = (await response.json()) as BookSearchResponse;
     const books = (data.items ?? []).map(mapVolumeToBook);
 
-    return { totalItems: data.totalItems ?? 0, books, isFallback: false };
+    return { totalItems: data.totalItems ?? 0, books };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
-    return { books: getFallbackBooks(), totalItems: getFallbackBooks().length, isFallback: true };
+    if (error instanceof TypeError) throw new Error('Não foi possível conectar à Google Books API.');
+    if (error instanceof Error) throw error;
+    throw new Error('Não foi possível conectar à Google Books API.');
   }
 }
 
 export async function getBook(id: string, signal?: AbortSignal): Promise<BookResult> {
-  if (!hasApiKey()) {
-    return { book: getFallbackBook(id), isFallback: true };
-  }
-
   try {
-    const response = await fetch(
-      withKey(`https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(id)}?`),
-      { signal },
-    );
+    const response = await fetch(createApiUrl(`/${encodeURIComponent(id)}`), { signal });
 
     if (!response.ok) {
-      throw new Error(`Google Books API: ${response.status}`);
+      throw getApiError(response.status);
     }
 
     const volume = (await response.json()) as GoogleVolume;
 
-    return { book: mapVolumeToBook(volume), isFallback: false };
+    return { book: mapVolumeToBook(volume) };
   } catch (error) {
     if (error instanceof Error && error.name === 'AbortError') throw error;
-    return { book: getFallbackBook(id), isFallback: true };
+    if (error instanceof TypeError) throw new Error('Não foi possível conectar à Google Books API.');
+    if (error instanceof Error) throw error;
+    throw new Error('Não foi possível conectar à Google Books API.');
   }
 }
 
