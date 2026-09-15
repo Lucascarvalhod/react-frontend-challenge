@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Header } from '@/components/header';
@@ -16,7 +16,7 @@ function renderWithRouter(ui: React.ReactNode) {
 describe('autenticação e cabeçalho', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    useAppStore.setState({ theme: 'light' });
+    useAppStore.setState({ theme: 'light', isHamburgerMenuOpen: false });
     vi.spyOn(authHook, 'useAuth').mockReturnValue({
       signIn: signInMock,
       signOut: signOutMock,
@@ -97,5 +97,30 @@ describe('autenticação e cabeçalho', () => {
     unmount();
     renderWithRouter(<LoginForm />);
     expect(screen.getByRole('button', { name: 'Ativar tema claro' })).toBeInTheDocument();
+  });
+
+  it('abre e fecha a sidebar mobile pelo botão, clique externo, Escape e navegação', () => {
+    renderWithRouter(<Header />);
+
+    const menuButton = screen.getByRole('button', { name: 'Abrir menu' });
+    expect(menuButton).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.queryByRole('dialog', { name: 'Menu de navegação' })).not.toBeInTheDocument();
+
+    fireEvent.click(menuButton);
+    const sidebar = screen.getByRole('dialog', { name: 'Menu de navegação' });
+    expect(menuButton).toHaveAttribute('aria-expanded', 'true');
+    expect(within(sidebar).getByText('Lucas Carvalho')).toBeInTheDocument();
+    expect(within(sidebar).getByRole('link', { name: 'Minha estante' })).toHaveAttribute('href', '/shelf');
+
+    fireEvent.click(screen.getAllByRole('button', { name: 'Fechar menu' })[0]);
+    expect(screen.queryByRole('dialog', { name: 'Menu de navegação' })).not.toBeInTheDocument();
+
+    fireEvent.click(menuButton);
+    fireEvent.keyDown(window, { key: 'Escape' });
+    expect(screen.queryByRole('dialog', { name: 'Menu de navegação' })).not.toBeInTheDocument();
+
+    fireEvent.click(menuButton);
+    fireEvent.click(within(screen.getByRole('dialog')).getByRole('link', { name: 'Minha estante' }));
+    expect(screen.queryByRole('dialog', { name: 'Menu de navegação' })).not.toBeInTheDocument();
   });
 });

@@ -93,6 +93,7 @@
   --color-accent-text: #60aca4;
   --color-danger: #f09a9a;
   --color-placeholder: #9aabab;
+  --primary-foreground: var(--color-page);
   --shadow-soft-value: 0 9px 28px rgb(0 0 0 / 22%);
   --shadow-raised-value: 0 20px 55px rgb(0 0 0 / 28%);
   --shadow-cover-value: 5px 6px 12px rgb(0 0 0 / 25%);

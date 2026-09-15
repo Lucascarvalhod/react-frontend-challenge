@@ -15,12 +15,12 @@ const book: Book = {
 describe('useAppStore', () => {
   beforeEach(() => {
     localStorage.clear();
-    useAppStore.setState({ books: [], theme: 'light' });
+    useAppStore.setState({ books: [], theme: 'light', isHamburgerMenuOpen: false });
   });
 
   afterEach(() => {
     localStorage.clear();
-    useAppStore.setState({ books: [], theme: 'light' });
+    useAppStore.setState({ books: [], theme: 'light', isHamburgerMenuOpen: false });
   });
 
   it('persiste biblioteca e tema na mesma entrada de storage', () => {
@@ -39,5 +39,18 @@ describe('useAppStore', () => {
 
     expect(useAppStore.getState().books).toEqual([book]);
     expect(useAppStore.getState().theme).toBe('light');
+  });
+
+  it('controla o menu hamburger sem persistir seu estado transitório', () => {
+    useAppStore.getState().openHamburgerMenu();
+    expect(useAppStore.getState().isHamburgerMenuOpen).toBe(true);
+
+    useAppStore.getState().toggleHamburgerMenu();
+    expect(useAppStore.getState().isHamburgerMenuOpen).toBe(false);
+
+    useAppStore.getState().openHamburgerMenu();
+    useAppStore.getState().closeHamburgerMenu();
+    expect(useAppStore.getState().isHamburgerMenuOpen).toBe(false);
+    expect(JSON.parse(localStorage.getItem('libris-library') ?? '{}').state).not.toHaveProperty('isHamburgerMenuOpen');
   });
 });

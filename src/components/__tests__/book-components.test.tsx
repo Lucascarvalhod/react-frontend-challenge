@@ -161,6 +161,15 @@ describe('componentes de livros', () => {
     expect(screen.getByRole('columnheader', { name: 'Livro' })).toBeInTheDocument();
   });
 
+  it('inclui uma estrutura em lista para a estante em telas pequenas', () => {
+    const { container } = render(<ShelfTable books={[book]} onStatusChange={vi.fn()} onRemove={vi.fn()} />);
+
+    expect(container.querySelector('.max-\\[760px\\]\\:hidden')).toBeInTheDocument();
+    expect(container.querySelector('.max-\\[760px\\]\\:block')).toBeInTheDocument();
+    expect(screen.getAllByText('Publicação')).toHaveLength(2);
+    expect(screen.getAllByRole('combobox')).toHaveLength(2);
+  });
+
   it('exibe um placeholder na estante quando o livro não possui capa', () => {
     const { container } = render(
       <ShelfTable books={[{ ...book, thumbnail: null }]} onStatusChange={vi.fn()} onRemove={vi.fn()} />,

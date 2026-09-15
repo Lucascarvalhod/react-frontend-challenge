@@ -19,7 +19,7 @@ export function EmptyState() {
       <Library size={40} className="mx-auto text-(--color-accent-text)" />
       <h2 className="mt-3.5 mb-1.25 font-serif text-[24px] text-(--color-heading)">Sua estante está vazia</h2>
       <p className="mb-5.5 text-[14px]">Descubra um livro novo e guarde-o aqui.</p>
-      <Button asChild>
+      <Button >
         <Link to="/">Explorar livros</Link>
       </Button>
     </div>
