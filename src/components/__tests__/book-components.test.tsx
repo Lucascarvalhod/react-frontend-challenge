@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { BookCard } from '@/components/books/book-card';
@@ -150,15 +150,18 @@ describe('componentes de livros', () => {
   it('altera status e remove livros da estante', () => {
     const onStatusChange = vi.fn();
     const onRemove = vi.fn();
-    render(<ShelfTable books={[book]} onStatusChange={onStatusChange} onRemove={onRemove} />);
+    const { container } = render(<ShelfTable books={[book]} onStatusChange={onStatusChange} onRemove={onRemove} />);
 
-    const status = screen.getByRole('combobox');
+    const desktopShelf = container.querySelector<HTMLElement>('.max-\\[760px\\]\\:hidden');
+    expect(desktopShelf).not.toBeNull();
+
+    const status = within(desktopShelf!).getByRole('combobox');
     fireEvent.change(status, { target: { value: 'Lendo' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Remover Duna' }));
+    fireEvent.click(within(desktopShelf!).getByRole('button', { name: 'Remover Duna' }));
 
     expect(onStatusChange).toHaveBeenCalledWith('duna', 'Lendo');
     expect(onRemove).toHaveBeenCalledWith('duna');
-    expect(screen.getByRole('columnheader', { name: 'Livro' })).toBeInTheDocument();
+    expect(within(desktopShelf!).getByRole('columnheader', { name: 'Livro' })).toBeInTheDocument();
   });
 
   it('inclui uma estrutura em lista para a estante em telas pequenas', () => {

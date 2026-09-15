@@ -16,14 +16,20 @@ export function ShelfTable({ books, onStatusChange, onRemove }: Props) {
     <>
       <div className="max-[760px]:hidden">
         <TableContainer>
-      <Table>
+      <Table className="table-fixed">
+        <colgroup>
+          <col className="w-[42%]" />
+          <col className="w-[20%]" />
+          <col className="w-[15%]" />
+          <col className="w-[17%]" />
+          <col className="w-12" />
+        </colgroup>
         <thead>
           <tr>
-            <th className="bg-muted [px-4.5] py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Livro</th>
-            <th className="bg-muted [px-4.5] py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Autor</th>
-            <th className="bg-muted [px-4.5] py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Publicação</th>
-            <th className="bg-muted [px-4.5] py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Status</th>
-            <th></th>
+            <th className="bg-muted px-4.5 py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Livro</th>
+            <th className="bg-muted px-4.5 py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Autor</th>
+            <th className="bg-muted px-4.5 py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Publicação</th>
+            <th className="bg-muted px-4.5 py-3.75 text-[11px] font-bold tracking-[0.06rem] text-(--color-text-subtle) uppercase">Status</th>
           </tr>
         </thead>
         <tbody>
@@ -45,10 +51,12 @@ export function ShelfTable({ books, onStatusChange, onRemove }: Props) {
 
 function ShelfRow({ book, onStatusChange, onRemove }: { book: Book; onStatusChange: Props['onStatusChange']; onRemove: Props['onRemove'] }) {
   return (
-    <tr className="[&:last-child_td]:border-b-0 [&_td]:border-b [&_td]:border-(--color-border-subtle) [&_td]:[px-4.5] [&_td]:py-3.75">
-      <td className="flex min-w-32 items-center gap-4">
-        <BookCover src={book.thumbnail} alt={`Capa de ${book.title}`} className="h-12.75 w-9 rounded-[3px] object-cover" />
-        <strong>{book.title}</strong>
+    <tr className="[&:last-child_td]:border-b-0 [&_td]:border-b [&_td]:border-(--color-border-subtle) [&_td]:px-4.5 [&_td]:py-3.75">
+      <td>
+        <div className="flex min-w-0 items-center gap-4">
+          <BookCover src={book.thumbnail} alt={`Capa de ${book.title}`} className="h-12.75 w-9 shrink-0 rounded-[3px] object-cover" />
+          <strong className="min-w-0 truncate">{book.title}</strong>
+        </div>
       </td>
       <td>{book.authors.join(', ')}</td>
       <td>{book.publishedDate}</td>
