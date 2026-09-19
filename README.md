@@ -1,81 +1,66 @@
 # React + TypeScript + Vite
+# Libris
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Uma aplicação web para descobrir livros, consultar seus detalhes e organizar uma estante pessoal. As buscas usam dados reais da Google Books API, com paginação, filtros e tratamento de estados de carregamento e erro.
 
-## Variáveis de ambiente
+## Deploy
 
-A `VITE_GOOGLE_BOOKS_API_KEY` é **opcional** — a Google Books API funciona sem chave para uso simples.
-Se a variável não estiver definida, a aplicação continua fazendo requisições reais à API, com limites de uso menores.
-Ao atingir o limite ou quando a API estiver indisponível, a tela exibe uma mensagem de erro. Veja [.env.example](.env.example).
+[Acessar o Libris publicado](https://react-frontend-challenge-five.vercel.app/)
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- React 19 com TypeScript
+- Vite
+- Tailwind CSS
+- React Router
+- Zustand para estado global e persistência da estante e do tema
+- TanStack Query para buscas e detalhes de livros
+- TanStack Form e Zod para o formulário de login e validação
+- Lucide React para ícones
+- Vitest e Testing Library para testes
+- Google Books API como fonte de dados
 
-## React Compiler
+## Como rodar
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Pré-requisito: Node.js instalado.
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Depois, abra a URL exibida pelo Vite, normalmente `http://localhost:5173`.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Para validar o projeto ou gerar a build de produção:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm run test:run
+npm run lint
+npm run build
 ```
+
+### Variáveis de ambiente
+
+A variável `VITE_GOOGLE_BOOKS_API_KEY` é opcional. A aplicação funciona sem chave para uso simples, mas a API pode aplicar limites de requisição menores. Para configurar uma chave localmente, copie [.env.example](.env.example) para `.env` e preencha o valor.
+
+## Credenciais de demo
+
+O login é uma simulação local, sem backend. Não existe uma conta fixa: use qualquer e-mail válido e uma senha com pelo menos 7 caracteres. Por exemplo:
+
+```text
+E-mail: leitor@teste.com
+Senha: segredo123
+```
+
+A sessão é armazenada no `localStorage` e pode ser encerrada pelo menu da conta.
+
+## Principais decisões arquiteturais
+
+- As páginas ficam em `src/pages`, os componentes são separados por domínio em `src/components`, e os comportamentos de tela ficam em hooks.
+- A comunicação com fontes externas é isolada em `src/services`, deixando a interface independente da Google Books API e da simulação de autenticação.
+- A estante e o tema usam slices separados no Zustand, com persistência local quando aplicável.
+- As respostas incompletas da Google Books API são normalizadas para contratos internos de livro, com valores de fallback e conversão de capas para HTTPS.
+- As buscas usam debounce e cancelamento de requisições antigas para evitar concorrência enquanto o usuário digita.
+- As rotas protegidas exigem uma sessão local antes de renderizar descoberta, estante e detalhes.
+
+Para o detalhamento das decisões de arquitetura e do fluxo Git, consulte [ARCHITECTURE.md](ARCHITECTURE.md).
