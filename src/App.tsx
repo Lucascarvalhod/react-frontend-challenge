@@ -1,13 +1,46 @@
-import './App.css'
+import type { ReactNode } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import { LoginForm } from '@/components/auth/login-form';
+import { BookDetailPage } from '@/pages/book-detail-page';
+import { DiscoverPage } from '@/pages/discover-page';
+import { ShelfPage } from '@/pages/shelf-page';
+import { hasSession } from '@/services/login-service';
+import { useTheme } from '@/hooks/use-theme';
 
-export default function App() {
+function Protected({ children }: { children: ReactNode }) {
+  return hasSession() ? children : <Navigate to="/login" replace />;
+}
+export function App() {
+  useTheme();
+
   return (
-    <div className="min-w-screen bg-gray-100">
-      <header className='bg-yellow-200 min-w-screen'>
-        <h1>
-          hello word
-        </h1>
-      </header>
-    </div>
-  )
+    <Routes>
+      <Route path="/login" element={<LoginForm />} />
+      <Route
+        path="/"
+        element={
+          <Protected>
+            <DiscoverPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/shelf"
+        element={
+          <Protected>
+            <ShelfPage />
+          </Protected>
+        }
+      />
+      <Route
+        path="/book/:bookId"
+        element={
+          <Protected>
+            <BookDetailPage />
+          </Protected>
+        }
+      />
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
 }
