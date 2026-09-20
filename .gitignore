@@ -12,8 +12,8 @@ dist
 dist-ssr
 .env
 .env.local
-.AGENTES.md
-.FEATURES
+AGENTES.md
+FEATURES
 
 # Editor directories and files
 .vscode/*
