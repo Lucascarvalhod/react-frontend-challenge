@@ -14,7 +14,7 @@ dist-ssr
 .env.local
 AGENTES.md
 FEATURES
-.cases
+cases/
 
 # Editor directories and files
 .vscode/*
