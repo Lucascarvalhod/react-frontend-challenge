@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { useLoginForm } from '@/hooks/use-login-form';
-import * as authHook from '@/hooks/use-auth';
+import * as loginHook from '@/hooks/use-login';
 
 function createWrapper() {
   return ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
@@ -14,9 +14,8 @@ describe('useLoginForm', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    vi.spyOn(authHook, 'useAuth').mockReturnValue({
+    vi.spyOn(loginHook, 'useLogin').mockReturnValue({
       signIn: signInMock,
-      signOut: vi.fn(),
       error: '',
     });
   });

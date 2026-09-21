@@ -1,11 +1,22 @@
 import type { ReactNode } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
-import { LoginForm } from '@/components/auth/login-form';
-import { BookDetailPage } from '@/pages/book-detail-page';
-import { DiscoverPage } from '@/pages/discover-page';
-import { ShelfPage } from '@/pages/shelf-page';
-import { hasSession } from '@/services/login-service';
+import { Suspense, lazy } from 'react';
+import { hasSession } from '@/services/session-service';
 import { useTheme } from '@/hooks/use-theme';
+import { PageLoader } from '@/components/ui/page-loader';
+
+const LoginForm = lazy(() =>
+  import('@/components/auth/login-form').then((m) => ({ default: m.LoginForm })),
+);
+const BookDetailPage = lazy(() =>
+  import('@/pages/book-detail-page').then((m) => ({ default: m.BookDetailPage })),
+);
+const DiscoverPage = lazy(() =>
+  import('@/pages/discover-page').then((m) => ({ default: m.DiscoverPage })),
+);
+const ShelfPage = lazy(() =>
+  import('@/pages/shelf-page').then((m) => ({ default: m.ShelfPage })),
+);
 
 function Protected({ children }: { children: ReactNode }) {
   return hasSession() ? children : <Navigate to="/login" replace />;
@@ -14,7 +25,8 @@ export function App() {
   useTheme();
 
   return (
-    <Routes>
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
       <Route path="/login" element={<LoginForm />} />
       <Route
         path="/"
@@ -42,5 +54,6 @@ export function App() {
       />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 }

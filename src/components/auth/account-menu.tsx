@@ -1,9 +1,9 @@
 import { LogOut } from 'lucide-react';
-import { demoUser, useAuth } from '@/hooks/use-auth';
+import { demoUser, useLogout } from '@/hooks/use-logout';
 import { Button } from '@/components/ui/button';
 
 export function AccountMenu() {
-  const { signOut } = useAuth();
+  const { signOut } = useLogout();
 
   return (
     <Button

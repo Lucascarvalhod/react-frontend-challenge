@@ -1,9 +1,9 @@
 import { useForm } from '@tanstack/react-form';
-import { useAuth } from '@/hooks/use-auth';
+import { useLogin } from '@/hooks/use-login';
 import { credentialsSchema, type LoginCredentials } from '@/services/login-service';
 
 export function useLoginForm() {
-  const { error, signIn } = useAuth();
+  const { error, signIn } = useLogin();
 
   const form = useForm({
     defaultValues: {

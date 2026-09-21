@@ -1,8 +1,8 @@
 import { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { login, logout, type LoginCredentials } from '@/services/login-service';
+import { login, type LoginCredentials } from '@/services/login-service';
 
-export function useAuth() {
+export function useLogin() {
   const navigate = useNavigate();
   const [error, setError] = useState('');
 
@@ -20,12 +20,5 @@ export function useAuth() {
     [navigate],
   );
 
-  const signOut = useCallback(() => {
-    logout();
-    navigate('/login');
-  }, [navigate]);
-
-  return { error, signIn, signOut };
+  return { error, signIn };
 }
-
-export const demoUser = { initials: 'LC', name: 'Lucas Carvalho', email: 'lucas@email.com' };

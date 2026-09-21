@@ -3,7 +3,8 @@ import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Header } from '@/components/header';
 import { LoginForm } from '@/components/auth/login-form';
-import * as authHook from '@/hooks/use-auth';
+import * as loginHook from '@/hooks/use-login';
+import * as logoutHook from '@/hooks/use-logout';
 import { useAppStore } from '@/store/app-store';
 
 const signInMock = vi.fn();
@@ -17,11 +18,11 @@ describe('autenticação e cabeçalho', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     useAppStore.setState({ theme: 'light', isHamburgerMenuOpen: false });
-    vi.spyOn(authHook, 'useAuth').mockReturnValue({
+    vi.spyOn(loginHook, 'useLogin').mockReturnValue({
       signIn: signInMock,
-      signOut: signOutMock,
       error: '',
     });
+    vi.spyOn(logoutHook, 'useLogout').mockReturnValue({ signOut: signOutMock });
   });
 
   it('exibe mensagens de validação ao preencher dados inválidos', async () => {
@@ -65,9 +66,8 @@ describe('autenticação e cabeçalho', () => {
   });
 
   it('exibe erro retornado pela autenticação global', () => {
-    vi.spyOn(authHook, 'useAuth').mockReturnValue({
+    vi.spyOn(loginHook, 'useLogin').mockReturnValue({
       signIn: signInMock,
-      signOut: signOutMock,
       error: 'Credenciais inválidas',
     });
 
